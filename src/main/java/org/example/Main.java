@@ -16,6 +16,7 @@ public class Main {
         System.out.println(task1);
         System.out.println();
 
+
         List<String> task2 = processStrings(names);
         System.out.println(task2.toString());
         System.out.println();
@@ -40,6 +41,7 @@ public class Main {
 
         Stream<Integer> iterate1 = Stream.iterate(42, (seed) -> ra.withSeed(seed).next());
         Stream<Integer> iterate2 = Stream.iterate(24, (seed) -> ra.withSeed(seed).next());
+
         List<Integer> collect1 = iterate1
                 .limit(3)
                 .collect(Collectors.toList());
@@ -49,21 +51,10 @@ public class Main {
                 .collect(Collectors.toList());
 
         Stream<Integer> stream1 = collect1.stream();
-        Iterator<Integer> iterator = stream1.iterator();
         Stream<Integer> stream2 = collect2.stream();
 
-        List<Integer> task5 = stream2.map(i -> {
-                    if (iterator.hasNext()) {
-                        return List.of(i, iterator.next());
-                    }
-                    return null;
-                })
-                .filter(Objects::nonNull)
-                .flatMap(java.util.Collection::stream)
-                .collect(Collectors.toList());
-        for (int i : task5) {
-            System.out.println(i);
-        }
+        List<Integer> task5 = zip(stream1,stream2).collect(Collectors.toList());
+        System.out.println(task5);
     }
 
     public static String getFormattedNames(List<String> names) {
@@ -84,5 +75,19 @@ public class Main {
                 .map(String::trim)
                 .sorted()
                 .collect(Collectors.joining(", "));
+    }
+
+    public static <T> Stream<T> zip(Stream<T> first, Stream<T> second){
+        Iterator<T> iterator = first.iterator();
+        Stream<T> result = second.map(i -> {
+                    if (iterator.hasNext()) {
+                        return List.of(i, iterator.next());
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .flatMap(java.util.Collection::stream);
+                //.collect(Collectors.toList());
+                return result;
     }
 }
